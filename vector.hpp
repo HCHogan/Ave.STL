@@ -1,4 +1,6 @@
+#include <alloca.h>
 #include <initializer_list>
+#include <memory>
 #include <stddef.h>
 #include <iostream>
 #include "./simple_allocator.hpp"
@@ -28,6 +30,11 @@ namespace Ave{
 
 		bool empty() const { return begin() == 0; }
 
+		void pop_back() {
+			--finish;
+			destory(finish);
+		}
+
 		reference operator[](size_type n){ return *(begin() + n); }
 
 		static const int expand_rate = 2;
@@ -41,6 +48,10 @@ namespace Ave{
 
 	protected:
 		typedef Alloc allocator;
+		void deallocate() {
+			if(start)
+				allocator::deallocate(start, end_of_storage - start);
+		}
 
 	protected:
 		iterator start;
