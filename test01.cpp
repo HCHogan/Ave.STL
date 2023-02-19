@@ -5,8 +5,12 @@
 
 int main() {
 	Ave::vector<int> myvec;
-	std::vector<int> stdvec;
-	std::cout << sizeof(myvec) << std::endl;
-	std::cout << sizeof(stdvec) << std::endl;
+	Ave::vector<char> mycharvec(100);
+
+	myvec.push_back(1);
+
+	std::cout << myvec[0] << std::endl;
+	std::cout << mycharvec.size() << std::endl;
+
 	return 0;
 }

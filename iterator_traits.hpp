@@ -1,4 +1,8 @@
+#ifndef __ITERATOR_TRAITS
+#define __ITERATOR_TRAITS
+
 #include <cstddef>
+#include "./iterator_category.hpp"
 namespace Ave {
 	template<class T>
 	struct iterator_traits {
@@ -28,3 +32,5 @@ namespace Ave {
 		typedef const T& reference;
 	};
 }
+
+#endif
