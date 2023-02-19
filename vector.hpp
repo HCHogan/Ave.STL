@@ -1,9 +1,18 @@
+// <vector> -*- C++ -*-
+//
+// Copyright (C) 2023 Avenue Inc.
+//
+
+#ifndef __VECTOR
+#define __VECTOR
+
 #include <alloca.h>
 #include <initializer_list>
 #include <memory>
 #include <stddef.h>
 #include <iostream>
 #include "./simple_allocator.hpp"
+// BOGUS: what to include?
 
 namespace Ave{
 	template<class T, class Alloc = simple_allocator<T>>
@@ -59,3 +68,5 @@ namespace Ave{
 		iterator end_of_storage;
 	};
 };
+
+#endif
