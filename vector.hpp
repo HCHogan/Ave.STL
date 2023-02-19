@@ -11,6 +11,7 @@
 #include <memory>
 #include <stddef.h>
 #include <iostream>
+#include "./memory.hpp"
 #include "./simple_allocator.hpp"
 // BOGUS: what to include?
 
@@ -41,32 +42,64 @@ namespace Ave{
 
 		void pop_back() {
 			--finish;
-			destory(finish);
+			destory(finish);	// TODO: destory()
+		}
+
+		void push_back(const T& x) {
+			if(finish != end_of_storage) {
+				construct(finish, x);		// TODO: construct()
+				++finish;
+			} else {
+				insert_aux(end(), x);
+			}
+		}
+
+		iterator erase(iterator position) {
+			if(position + 1 != end()) copy(position+1, finish, position);	// TODO: copy()
 		}
 
 		reference operator[](size_type n){ return *(begin() + n); }
 
 		static const int expand_rate = 2;
 	
-	protected:
-		void fill_initialize(size_type n, const T& value) {
-			start = allocate_and_fill(n, value);
-			finish = start + n;
-			end_of_storage = finish;
-		}
 
 	protected:
 		typedef Alloc allocator;
+
+		void insert_aux(iterator position, const T& x);						// TODO: insert_aux()
 		void deallocate() {
 			if(start)
 				allocator::deallocate(start, end_of_storage - start);
 		}
 
 	protected:
+		void fill_initialize(size_type n, const T& value) {
+			start = allocate_and_fill(n, value);							
+			finish = start + n;
+			end_of_storage = finish;
+		}
+
+		void allocate_and_fill(size_type n, const T& x) {
+			iterator result = allocator::allocate(n);
+			uninitialized_fill_n(result, n, x);								// TODO: uninitialized_fill_n()
+			return result;
+		}
+		
+	protected:
 		iterator start;
 		iterator finish;
 		iterator end_of_storage;
 	};
+
+	template <class T, class Alloc>
+	void vector<T, Alloc>::insert_aux(iterator position, const T& x) {
+		if(finish != end_of_storage) {
+			construct(finish, *(finish - 1));
+			++finish;
+			T x_copy = x;
+		}
+	}
 };
+
 
 #endif

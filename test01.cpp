@@ -1,5 +1,6 @@
 #include "./vector.hpp"
 #include "iostream"
+#include <memory>
 #include <vector>
 
 int main() {
