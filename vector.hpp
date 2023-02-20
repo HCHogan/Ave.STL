@@ -60,7 +60,7 @@ namespace Ave{
 		reference front() { return *begin(); }
 		reference back() { return *end() - 1; }
 
-		size_type size() const { return size_type(end() - begin());}
+		size_type size() const { return size_type(end() - begin()); }
 		size_type capacity() const { return size_type(end_of_storage - begin()); }
 
 		bool empty() const { return begin() == 0; }
