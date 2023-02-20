@@ -3,17 +3,28 @@
 #include "./iterator_traits.hpp"
 
 namespace Ave {
-	template<class Iterator, class T>
-	void construct(Iterator iter, const T& x) {
-		*iter = x;
+	template<class T1, class T2>
+	void construct(T1* p, const T2& x) {
+		new(p) T1(x);
 		return;
 	}
 
-	template<class Iterator>
-	void destroy(Iterator first, Iterator finish) {
+	template<class T>
+	void construct(T* p) {
+		new(p) T();
+		return;
+	}
+
+	template<class T>
+	void destroy(T* first, T* finish) {
 		for(; first != finish; ++first) {
-			
+			first->~T();
 		}
+	}
+
+	template<class T>
+	void destroy(T* p) {
+		p->~T1();
 	}
 
 	template<class Iterator>

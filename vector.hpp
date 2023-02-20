@@ -6,8 +6,6 @@
 #ifndef __VECTOR__HPP
 #define __VECTOR__HPP
 
-#include <alloca.h>
-#include <initializer_list>
 #include <stddef.h>
 #include <iostream>
 #include "./memory.hpp"
@@ -31,23 +29,28 @@ namespace Ave{
 
 		vector(size_type n, const T& value) {
 			fill_initialize(n, value);
+			std::cout << "Ave::vector fill_initialize constructed\n";
 		}
 
 		vector(int n, const T& value) {
 			fill_initialize(n, value);
+			std::cout << "Ave::vector fill_initialize constructed\n";
 		}
 
 		vector(long n, const T& value) {
 			fill_initialize(n, value);
+			std::cout << "Ave::vector fill_initialize constructed\n";
 		}
 
 		explicit vector(size_type n) {
 			fill_initialize(n, T());
+			std::cout << "Ave::vector fill_initialize constructed\n";
 		}
 
 		~vector() {
 			destroy(start, finish);
 			deallocate();
+			std::cout << "Ave::vector destroyed\n";
 		}
 
 	public:
