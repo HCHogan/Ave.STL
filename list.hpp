@@ -22,19 +22,58 @@ namespace Ave {
 	};
 
 	template<class T>
-	class __list_iterator {
-	public:
+	struct __list_iterator {
 		typedef __list_iterator<T> _self;
-		typedef __list_node<T> _node;
+		typedef __list_node<T>* link_type;
 		
 		typedef T value_type;
 		typedef T* pointer;
 		typedef T& reference;
 		typedef ptrdiff_t difference_type;
 		typedef bidirectional_iterator_tag iterator_category;
-		typedef __list_node<T>* node;
 
-	public:
+		link_type node;
+
+		reference operator*() const { return node->data; }
+		pointer operator->() const { return &(operator*()); }		// operator->本来的作用对象是指针
+
+		__list_iterator(const __list_iterator<T>& it) : node(it.node) {}
+
+		__list_iterator<T>& operator++() {
+			node = node->next;
+			return *this;
+		}
+
+		__list_iterator<T> operator++(int) {
+			__list_iterator<T> temp = *this;		// 不会调用重载过的operator*因为编译器先遇到了=,解释为赋值构造
+			++*this;
+			return temp;
+		}
+
+		__list_iterator<T>& operator--() {
+			node = node->prev;
+			return *this;							// 并不会唤起什么
+		}
+
+		__list_iterator<T> operator--(int) {
+			__list_iterator<T> temp = *this;
+			--*this;
+			return temp;
+		}
+
+		__list_iterator<T>& operator+(int n) {
+			while(n) {
+				++*this;
+			}
+			return *this;
+		}
+
+		__list_iterator<T>& operator-(int n) {
+			while(n) {
+				--*this;
+			}
+			return *this;
+		}
 		
 	};
 		
@@ -52,6 +91,9 @@ namespace Ave {
 		typedef size_t size_type;
 
 		typedef list_node* link_type;
+	
+	protected:
+		link_type node;
 
 	};
 };
