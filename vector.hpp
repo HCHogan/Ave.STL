@@ -139,16 +139,16 @@ namespace Ave{
 			copy_backward(position, finish - 2, finish - 1);
 			*position = temp;
 		} else {
-			const size_type old_size = size();
-			const size_type len = old_size != 0 ? expand_rate*old_size : 1;
+			size_type old_size = size();
+			size_type len = old_size != 0 ? expand_rate*old_size : 1;
 			// if 0, 1 else rate * old_size;
 			iterator new_start = Alloc::allocate(sizeof(T) * len,0);
-			iterator new_finish = new_start;
+			iterator new_finish = new_start + old_size;
 			// copy the old container to the new one
 			try {
-				new_finish = uninitialized_copy(start, position, new_finish);
+				uninitialized_copy(start, position, new_start);
 				construct(new_finish, x);
-				++finish;
+				++new_finish;
 			} catch(...) {
 				destroy(new_start, new_finish);
 				allocator::deallocate(new_start, len);
