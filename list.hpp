@@ -89,8 +89,29 @@ namespace Ave {
 		typedef T& reference;
 		typedef ptrdiff_t difference_type;
 		typedef size_t size_type;
+		typedef Alloc allocator;
 
 		typedef list_node* link_type;
+
+		link_type _M_get_node() {
+			return allocator::allocate(sizeof(list_node));
+		}
+
+		link_type _M_create_node() {
+			link_type p = _M_get_node();
+		}
+
+		list() {
+			node = _M_get_node();
+			node->next = node;
+			node->prev = node;
+		}
+
+	public:
+		void push_front(const T& x) {
+			link_type newnode = allocator::allocate(sizeof(list_node));
+
+		}
 	
 	protected:
 		link_type node;

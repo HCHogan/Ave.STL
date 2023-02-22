@@ -119,7 +119,7 @@ namespace Ave{
 		}
 
 		iterator allocate_and_fill(size_type n, const T& x) {
-			iterator result = allocator::allocate(n, 0);
+			iterator result = allocator::allocate(sizeof(T) * n, 0);
 			uninitialized_fill_n(result, n, x);								// TODO: uninitialized_fill_n()
 			return result;
 		}
@@ -142,7 +142,7 @@ namespace Ave{
 			const size_type old_size = size();
 			const size_type len = old_size != 0 ? expand_rate*old_size : 1;
 			// if 0, 1 else rate * old_size;
-			iterator new_start = Alloc::allocate(len,0);
+			iterator new_start = Alloc::allocate(sizeof(T) * len,0);
 			iterator new_finish = new_start;
 			// copy the old container to the new one
 			try {
