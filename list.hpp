@@ -15,15 +15,16 @@
 namespace Ave {
 
 	template<class T>
-	class __list_node {
-		T* prev;
-		T* next;
+	struct __list_node {
+		__list_node<T>* prev;
+		__list_node<T>* next;
 		T data;
 	};
 
 	template<class T>
 	struct __list_iterator {
-		typedef __list_iterator<T> _self;
+	public:
+		typedef __list_iterator<T> self;
 		typedef __list_node<T>* link_type;
 		
 		typedef T value_type;
@@ -74,6 +75,10 @@ namespace Ave {
 			}
 			return *this;
 		}
+
+		bool operator==(const self& x) const {
+			return node == x.node;
+		}
 		
 	};
 		
@@ -94,7 +99,7 @@ namespace Ave {
 		typedef list_node* link_type;
 
 		link_type _M_get_node() {
-			return allocator::allocate(sizeof(list_node));
+			return (link_type)allocator::allocate(sizeof(list_node));
 		}
 
 		link_type _M_create_node() {
