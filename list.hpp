@@ -151,7 +151,7 @@ namespace Ave {
 
 		iterator insert(iterator position, const T& x) {
 			link_type tmp = create_node(x);
-			tmp->next = position.node->next;
+			tmp->next = position.node;
 			tmp->prev = position.node->prev;
 			position.node->prev->next = tmp;
 			position.node->prev = tmp;
