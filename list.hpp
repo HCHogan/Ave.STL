@@ -11,6 +11,7 @@
 #include "./memory.hpp"
 #include "./simple_allocator.hpp"
 #include "./iterator_category.hpp"
+#include <initializer_list>
 
 namespace Ave {
 
@@ -127,6 +128,11 @@ namespace Ave {
 
 		list() {
 			empty_initializer();
+		}
+
+		list(const std::initializer_list<T>& __l) {
+			empty_initializer();
+			for(auto x : __l) push_back(x);
 		}
 
 		iterator begin() {
