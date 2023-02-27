@@ -11,5 +11,12 @@ int main() {
 		mylist.push_back(i);
 	std::cout << mylist.front() << std::endl;
 	std::cout << mylist.back() << std::endl;
+	for(auto it = mylist.begin(); it != mylist.end(); ++it) {
+		std::cout << mylist.end().node - it.node << std::endl;
+		std::cout << *it << std::endl;
+	}
+	// for(auto it = mylist.begin(); !(it == mylist.end()); ++it) {
+		// std::cout << *it << std::endl;
+	// }
 	return 0;
 }

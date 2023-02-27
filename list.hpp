@@ -81,6 +81,10 @@ namespace Ave {
 		bool operator==(const self& x) const {
 			return node == x.node;
 		}
+
+		bool operator!=(const self& x) const {
+			return node != x.node;
+		}
 		
 	};
 		
@@ -162,6 +166,26 @@ namespace Ave {
 			destroy_node(position);
 			return next_node;
 		}
+		
+		iterator find(iterator start, iterator finish, const T& x) {
+			while(start != finish) {
+				if(start.node->data == x)
+					return start;
+				++start;
+			}
+			return start;
+		}
+
+		iterator erase(const T& x) {
+			iterator tmp = find(begin(), end(), x);
+			erase(tmp);
+		}
+
+		size_type size() {
+			size_type cnt = 0;
+			for(iterator it = begin(); it != end(); ++it) ++cnt;
+			return cnt;
+		}
 
 	public:
 		void push_back(const T& x) {
@@ -174,7 +198,6 @@ namespace Ave {
 	
 	protected:
 		link_type node;
-
 	};
 };
 
