@@ -40,6 +40,8 @@ namespace Ave {
 
 		__list_iterator(const __list_iterator<T>& it) : node(it.node) {}
 
+		__list_iterator(const link_type& x) : node(x) { }
+
 		__list_iterator<T>& operator++() {
 			node = node->next;
 			return *this;
@@ -98,24 +100,76 @@ namespace Ave {
 
 		typedef list_node* link_type;
 
-		link_type _M_get_node() {
+		link_type get_node() {
 			return (link_type)allocator::allocate(sizeof(list_node));
 		}
 
-		link_type _M_create_node() {
-			link_type p = _M_get_node();
+		link_type create_node(const T& x) {
+			link_type p = get_node();
+			p->data = x;
+			return p;
 		}
 
-		list() {
-			node = _M_get_node();
+		void destroy_node(link_type p) {
+			destroy(&p->data);
+			allocator::deallocate(p);
+		}
+
+		void empty_initializer() {
+			node = get_node();
 			node->next = node;
 			node->prev = node;
 		}
 
-	public:
-		void push_front(const T& x) {
-			link_type newnode = allocator::allocate(sizeof(list_node));
+		list() {
+			empty_initializer();
+		}
 
+		iterator begin() {
+			return node->next;
+		}
+
+		iterator end() {
+			return node;
+		}
+
+		bool empty() {
+			return node->next == node;
+		}
+
+		reference front() {
+			return *begin();
+		}
+
+		reference back() {
+			return *(--end());
+		}
+
+		iterator insert(iterator position, const T& x) {
+			link_type tmp = create_node(x);
+			tmp->next = position.node->next;
+			tmp->prev = position.node->prev;
+			position.node->prev->next = tmp;
+			position.node->prev = tmp;
+			return tmp;
+		}
+
+		iterator erase(iterator position) {
+			link_type next_node = position.node->next;
+			link_type prev_node = position.node->prev;
+			prev_node->next = next_node;
+			next_node->prev = prev_node;
+			destroy_node(position);
+			return next_node;
+		}
+
+	public:
+		void push_back(const T& x) {
+			insert(end(), x);
+		}
+
+		void push_front(const T& x) {
+			insert(begin(), x);
 		}
 	
 	protected:
