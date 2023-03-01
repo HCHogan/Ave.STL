@@ -201,10 +201,29 @@ namespace Ave {
 		void push_front(const T& x) {
 			insert(begin(), x);
 		}
+
+		void sort();
+
+		void swap(iterator lhs, iterator rhs) {
+			link_type one = lhs.node->prev;
+			link_type two = lhs.node->next;
+			link_type three = rhs.node->prev;
+			link_type four = rhs.node->next;
+			lhs.node->next = four;
+			lhs.node->prev = three;
+			rhs.node->next = two;
+			rhs.node->prev = one;
+		}
 	
 	protected:
 		link_type node;
 	};
+
+	template<class T, class Alloc>
+	void list<T, Alloc>::sort() {
+		
+	}
 };
+
 
 #endif
