@@ -247,20 +247,24 @@ namespace Ave {
 		}
 	
 	public:
+		// 将x接合于position所指位置之前 x必须不同于*this
 		void splice(iterator position, list& x) {
 			if(!x.empty())
 			transfer(position, x.begin(), x.end());
 		}
 
-		void splice(iterator position, iterator i) {
+		// 吧i所指位置的元素接在position之前
+		void splice(iterator position, list&, iterator i) {
 			if(i == position) return;
 			iterator j = i;
 			++j;
 			transfer(position, i, j);
 		}
 
+		// 吧first到last接到list x的 position前面
 		void splice(iterator position, list& , iterator first, iterator last) {
-			transfer(position, first, last);
+			if(first != last)
+				transfer(position, first, last);
 		}
 
 	public:
@@ -273,8 +277,10 @@ namespace Ave {
 		}
 
 		void sort();
+		void merge(list<T, Alloc>& x);
+		void reverse();
 
-		void swap(iterator lhs, iterator rhs) {
+		void swap_elem(iterator lhs, iterator rhs) {
 			link_type one = lhs.node->prev;
 			link_type two = lhs.node->next;
 			link_type three = rhs.node->prev;
@@ -284,15 +290,78 @@ namespace Ave {
 			rhs.node->next = two;
 			rhs.node->prev = one;
 		}
+
+		void swap(list<T, Alloc>& x) {
+			auto it = begin();
+			splice(begin(), x);
+			splice(x.begin(), *this, it, end());
+		}
 	
 	protected:
 		link_type node;
 	};
 
+	// merge list x on this (two sorted list)
+	template<class T, class Alloc>
+	void list<T, Alloc>::merge(list<T, Alloc>& x) {
+		iterator first1 = begin();
+		iterator last1 = end();
+		iterator first2 = x.begin();
+		iterator last2 = x.end();
+
+		while(first1 != last1 && first2 != last2) {
+			if(*first2 < *first1) {
+				iterator next = first2;
+				transfer(first1, first2, ++next);
+				first2 = next;
+			} else {
+				++first1;
+			}
+		}
+
+		if(first2 != last2)
+			transfer(last1, first2, last2);
+		// if x left > this, merge the left part onto x
+	}
+
+	template<typename T, typename Alloc>
+	void list<T, Alloc>::reverse() {
+		if(node->next == node || node->next->next == node)
+			return;
+
+		iterator first = begin();
+		++first;
+
+		while(first != end()) {
+			iterator old = first;
+			++first;
+			transfer(begin(), old, first);
+		}
+	}
+
 	template<class T, class Alloc>
 	void list<T, Alloc>::sort() {
-		if(node->next->next == node && node->next == node) return;
-		
+		if(node->next->next == node && node->next == node)
+			return;
+		list<T, Alloc> temp;
+		list<T, Alloc> counter[64];
+		int fill = 0;
+
+		while(!empty()) {
+			temp.splice(temp.begin(), *this, begin());
+			int i = 0;
+			while(i < fill && !counter[i].empty()) {
+				counter[i].merge(temp);
+				temp.swap(counter[i++]);
+			}
+			temp.swap(counter[i]);
+			if(i == fill) ++fill;
+		}
+
+		for(int i = 1; i < fill; ++i)
+			counter[i].merge(counter[i - 1]);
+
+		swap(counter[fill - 1]);
 	}
 };
 
