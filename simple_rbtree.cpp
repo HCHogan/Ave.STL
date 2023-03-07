@@ -22,10 +22,22 @@ struct Node {
 	bool color;
 };
 
-bool isRed(Node*& n) {
+bool isRed(Node* n) {
 	if(n == NULL)
 		return false;
 	return n->color;
+}
+
+bool isRedLeft(Node* n) {
+	if(n == NULL || n->left == NULL)
+		return false;
+	return n->left->color;
+}
+
+bool isRedRight(Node* n) {
+	if(n->right == NULL)
+		return false;
+	return n->right->color;
 }
 
 void rotateLeft(Node*& n) {
@@ -36,7 +48,9 @@ void rotateLeft(Node*& n) {
 	x->color = n->color;
 	n->color = RED;
 	x->n = n->n;
-	n->n = n->left->n + n->right->n + n->cnt;
+	n->n = n->cnt;
+	if(n->left != NULL) n->n += n->left->n;
+	if(n->right != NULL) n->n += n->right->n;
 	n = x;
 }
 
@@ -48,40 +62,49 @@ void rotateRight(Node*& n) {
 	x->color = n->color;
 	n->color = RED;
 	x->n = n->n;
-	n->n = n->left->n + n->right->n + n->cnt;
+	n->n = n->cnt;
+	if(n->left != NULL) n->n += n->left->n;
+	if(n->right != NULL) n->n += n->right->n;
 	n = x;
 }
 
 void flipColors(Node*& n) {
 	if(n) {
-		n->left->color = BLACK;
-		n->right->color = BLACK;
+		if(n->left) n->left->color = BLACK;
+		if(n->right) n->right->color = BLACK;
 		n->color = RED;
 	}
 }
 
 void insert(int x, Node*& h) {
-	if(h == NULL) h = new Node{x, x, NULL, NULL, 1, 1, RED};
+	if(h == NULL) {
+		h = new Node{x, x, NULL, NULL, 1, 1, RED};
+		return;
+	}
 	if(x < h->key) insert(x, h->left);
 	else if(x > h->key) insert(x, h->right);
 	else h->cnt++;
 	if(isRed(h->right) && !isRed(h->left)) rotateLeft(h);
-	if(isRed(h->left) && isRed(h->left->left)) rotateRight(h);
+	if(isRed(h->left) && isRedLeft(h->left)) rotateRight(h);
 	if(isRed(h->left) && isRed(h->right)) flipColors(h);
-	h->n = h->left->n + h->right->n + h->cnt;
+	h->n = h->cnt;
+	if(h->left != NULL) h->n += h->left->n;
+	if(h->right != NULL) h->n += h->right->n;
 }
 
 void balance(Node*& h) {
 	if(isRed(h->right)) rotateLeft(h);
 	if(isRed(h->right) && !isRed(h->left)) rotateLeft(h);
-	if(isRed(h->left) && isRed(h->left->left)) rotateRight(h);
+	if(isRed(h->left) && isRedLeft(h->left)) rotateRight(h);
 	if(isRed(h->left) && isRed(h->right)) flipColors(h);
-	h->n = h->left->n + h->right->n + h->cnt;
+	h->n = h->cnt;
+	if(h->left != NULL) h->n += h->left->n;
+	if(h->right != NULL) h->n += h->right->n;
 }
 
 void moveRedLeft(Node*& h) {	// 把右孩子吸上来扩充自己的容量
 	flipColors(h);				// 目标 把左下孩子变红
-	if(isRed(h->right->left)) {
+	if(isRedLeft(h->right)) {
 		rotateRight(h->right);
 		rotateLeft(h);
 	}
@@ -89,7 +112,7 @@ void moveRedLeft(Node*& h) {	// 把右孩子吸上来扩充自己的容量
 
 void moveRedRight(Node*& h) {
 	flipColors(h);
-	if(!isRed(h->left->left))
+	if(!isRedLeft(h->left))
 		rotateRight(h);
 }
 
@@ -104,7 +127,7 @@ void delMin(Node*& h) {
 		h = NULL;
 		return;
 	}
-	if(!isRed(h->left) && !isRed(h->left->left))
+	if(!isRed(h->left) && !isRedLeft(h->left))
 		moveRedLeft(h);			// 合并到一条上
 	delMin(h->left);		// 继续搜左边的	
 	balance(h);				// 向上提,保持平衡崩回去
@@ -113,7 +136,7 @@ void delMin(Node*& h) {
 
 void del(Node*& h, const int& n) {
 	if(n < h->key) {
-		if(!isRed(h->left) && !isRed(h->left->left)) {		// 当前节点的左孩子 容量只有1
+		if(!isRed(h->left) && !isRedLeft(h->left)) {		// 当前节点的左孩子 容量只有1
 			moveRedLeft(h);									// 右边孩子吸上来扩充自己容量
 		}
 		del(h->left, n);
@@ -121,7 +144,7 @@ void del(Node*& h, const int& n) {
 		if(isRed(h->left))
 			rotateRight(h);
 
-		if(n == h->key && !isRed(h->right->left)) {
+		if(n == h->key && !isRedLeft(h->right)) {
 			moveRedRight(h);
 		}
 	
@@ -133,13 +156,20 @@ void del(Node*& h, const int& n) {
 		} else del(h->right, n);
 	}
 	balance(h);
+	printf("删除了%d\n", n);
 }
 
-Node root = {0, 0, NULL, NULL, 1, 1, BLACK};
-Node* rootp = &root;
+Node* root = NULL;
 
 int main() {
-	for(int i = 1; i <= 100; i++) {
-		insert(i, rootp);
+	
+	for(int i = 2; i >= 1; --i) {
+		insert(i, root);
+		root->color = BLACK;
+	}
+
+	for(int i = 1; i <= 2; i++) {
+		del(root, i);
+		root->color = BLACK;
 	}
 }
